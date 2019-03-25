@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Python Data Collector App</title>
+        <link href="../static/main.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <h1>Collecting height data</h1>
+            <h3>Please fill the entry boxes to get population statistics on height</h3>
+            <form action="success.html" method="POST">
+                <input type="email" title="Your email address will be safe with us" placeholder="Enter your email address" name="email_name" required />
+                <!--  validation to email by 'type', and 'required' mandatory-->
+                <br>
+                <input type="number" min="50" max="300" title="Your height data will be safe with us" placeholder="Enter your height in centimetres" name="height_name" required />
+                <!-- 'number' type with 'min' and 'max' and 'step' of 0.1 to restrict to 1 decimal place-->
+                <br>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </body>
+
+</html>
