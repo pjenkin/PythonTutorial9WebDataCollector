@@ -8,7 +8,7 @@
         <div class="container">
             <h1>Collecting height data</h1>
             <h3>Please fill the entry boxes to get population statistics on height</h3>
-            <form action="success.html" method="POST">
+            <form action="{{url_for('success')}}" method="POST">
                 <input type="email" title="Your email address will be safe with us" placeholder="Enter your email address" name="email_name" required />
                 <!--  validation to email by 'type', and 'required' mandatory-->
                 <br>
