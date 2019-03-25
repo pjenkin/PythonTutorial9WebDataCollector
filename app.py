@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 # from flask.ext.sqlalchemy import SQLAlchemy   # NB was this
 from flask_sqlalchemy import SQLAlchemy             # now this (as of 25/3/19)
+from send_email import send_email
 
 app = Flask(__name__)           # use whatever is the name of this script cf 10-143
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/height_collector'
@@ -11,6 +12,7 @@ db = SQLAlchemy(app)
 # ORM model for SQLAlchemy
 # NB underscores for variable names in ORM object
 class Data(db.Model):
+    """ ORM model for SQLAlchemy """
     __tablename__ = "data"
     id = db.Column(db.Integer, primary_key=True)
     email_ = db.Column(db.String(120), unique=True)       # max length 120 characters
