@@ -44,5 +44,12 @@ html, body {
 
 .container p
 {
-margin: 100 px;
+    margin: 100 px;
+}
+
+.message {
+/* feedback for user on form  */
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    color: #f9999;
 }
