@@ -943,7 +943,7 @@ def success():
         # print(email)
         print(request.form)
         return render_template('success.html')
-
+# (NB changed in 21-236, see below)
 
 with, in markup,             <form action="{{url_for('success')}}" method="POST">
 
@@ -992,6 +992,117 @@ NB Neither SQLALCHEMY_DATABASE_URI nor SQLALCHEMY_BINDS is set. - this is the wa
 
 On correct usage, table(s) according to ORM model will be formed and visible (after refresh) in pgAdmin
 
+21-236   - http://flask-sqlalchemy.pocoo.org/2.3/quickstart/
+
+
+    if request.method == 'POST':
+        email = request.form['email_name']      # NB variable from POST'd data - *without* underscore suffix
+        height = request.form['height_name']
+        # print(email)
+        print(request.form)
+        # need to map string fields to database
+        data = Data(email, height)
+        db.session.add(data)        # pass instance of Data ORM class to this PostGreSQL session
+        db.session.commit()
+        return render_template('success.html')
+
+
+        print(db.session.query(Data).filter(Data.email_ == email)) >>>
+SELECT data.id AS data_id, data.email_ AS data_email_, data.height_ AS data_height_ 
+FROM data 
+WHERE data.email_ = %(email__1)s
+
+        print(db.session.query(Data).filter(Data.email_ == email)).count >>> 
+1   - so can use to check for unique email already present in db
+
+
+
+TODO: try renaming table to something other than just 'data' eg 'height-data'
+TODO: alembic for SQLAlchemy migrations
+
+231-237 emailing - new module send_mail.py - 
+
+TODO: TLS
+TODO: SMTP HELO
+https://www.udemy.com/the-python-mega-course/learn/v4/questions/5226530  - python-dotenv hidden venv for login credentials &c cf 
+
+from email.mime.text import MIMEText       # standard package - enabling HTML content
+import smtplib
+
+def send_email(email, height):
+    """Send email back from form """
+    from_email = 'peterjenkin2019@gmail.com'
+    from_password = 'P0s1t!ve'
+    to_email = email
+
+    subject = 'Height data'
+    message = f'Hello, your height was recorded as <strong><em>{height}</em></strong>'
+
+    message = MIMEText(message, 'html')     # MIME type of html in message header
+    message['Subject'] = subject
+    message['To'] = to_email
+    message['From'] = from_email
+
+    gmail = smtplib.SMTP('smtp.gmail.com', 587)          # https://support.google.com/a/answer/176600?hl=en
+    gmail.ehlo          # https://docs.python.org/2/library/smtplib.html
+    gmail.starttls      # NB Transport Layer Security - gmail on port 587
+    gmail.login(from_email, from_password)
+    gmail.send_message(message)
+    # NB Allow less secure apps - Sign-in & security in gmail - as of 25/3/19 requiring G-Suite, for which there is a charge
+Didn't get this working (due to Gmail less secure apps settings?)
+# https://stackoverflow.com/a/27515833  https://www.lifewire.com/get-a-password-to-access-gmail-by-pop-imap-2-1171882   https://stackoverflow.com/a/48073337
+https://support.google.com/accounts/answer/185833?hl=en        
+Google Account / Security   https://myaccount.google.com/
+1) set up 2-step verification (using mobile phone SMS messages with 6-digit code) in a few clicks
+2) then 'set up app passwords' will become possible - verify with 2 step SMS message code - Add an App Password - from App Password page 'Select App': Mail, 'Select Device': Windows Computer (?)
+
+Your app password for Windows Computer
+rohimpmmlsdluxvf How to use it Open the “Mail” app. Open the “Settings” menu. Select “Accounts” and then select your Google Account. Replace your password with the 16-character password shown above. Just like your normal password, this app password grants complete access to your Google Account. You won't need to remember it, so don't write it down or share it with anyone
+changed whole google account password to rohimpmmlsdluxvf
+tried wdjfugluvjmivgxj  - for Mail and Other ('Python Udemy Web Data Collector 9')
+Still no email sent - error message:
+SMTP AUTH extension not supported by server.
+
+21-238 
+average_height = db.session.query(func.avg(Data.height_))       # NB underscore to get object property
+>>> average height: SELECT avg(data.height_) AS avg_1 FROM data
+average_height = db.session.query(func.avg(Data.height_)).scalar()       # NB underscore to get object property
+
+21-239 Heroku deployment cf 20-229 & 10-150
+app.config string 	must be changed to point to Heroku db
+x3 (1) create Heroku app myappname (2) create database via Heroku command line - heroku addons:create heroku-postgresql:hobby-dev --app myappname   - hobby-dev is a free-of-charge <10k rows type of db - database counted as an app (5 max for free-of-charge) - 
+(3) heroku config --app myappname
+then copy/paste DATABASE_URL from (3) into app.config['SQLALCHEMY_DATABASE_URI']   - strangely, url d'involve AWS
+NB ?ssl_mode=require
+
+pip3 install gunicorn 
+requirements.txt (pip3 freeze > requirements.txt)
+Procfile.           web: gunicorn  app:app
+runtime.txt      - value of interpreter obtained from Heroku/Python web page
+
+to instantiate ORM table model (e.g. Data) on Heroku, open python on Heroku - 
+heroku run python  - may be 2.7 or some earlier version
+heroku run bash  - also possible (Heroku on Linux)
+	cat app.py    - to see code listed in bash command line
+in python >>> from import db       >>> db.create_all()      - cf 21-235
+(ensure PostGreSQL bin in PATH) - from command line - heroku login 
+heroku pg:sql --app myappname
+queries typable with trailing semicolon;
+
+
+C:\Users\peter.DESKTOP-3GCVT7E\source\repos\Python\python mega course\9WebDataCollector>psql -U postgres height_collector
+psql (10.7)
+WARNING: Console code page (850) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+height_collector=# DELETE FROM data WHERE id > 1;
+DELETE 1
+height_collector=#
+
+NB on Windows: psql -U mydbusername mydatabasename  - https://www.w3resource.com/PostgreSQL/connect-to-postgresql-database.php
+NB Python d'require WSGI-enabled server & framework for web facing - https://wiki.python.org/moin/WebFrameworks
 
 
 
@@ -1014,6 +1125,7 @@ indexing (innexing)
 python (poython)
 not (noh)
 my (moy)
+file (foil)
 convert (covert)
 extract (extrot)
 comma (coma)
@@ -1025,3 +1137,5 @@ so you get (syiget)
 column (com)
 csv (seesvee)
 web scraping (web scrapping)
+
+you know (at start, rather than at end like USA usage - interesting)

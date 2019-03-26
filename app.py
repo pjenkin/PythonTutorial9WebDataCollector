@@ -7,6 +7,7 @@ from sqlalchemy.sql import func
 app = Flask(__name__)           # use whatever is the name of this script cf 10-143
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/height_collector'
 # in URI args postgres: user-name:password@server-address/database-name
+# URI string would have to be populated from 'heroku config myappname' if deploying to Heroku
 db = SQLAlchemy(app)
 
 
