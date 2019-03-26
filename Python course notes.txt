@@ -1104,6 +1104,31 @@ height_collector=#
 NB on Windows: psql -U mydbusername mydatabasename  - https://www.w3resource.com/PostgreSQL/connect-to-postgresql-database.php
 NB Python d'require WSGI-enabled server & framework for web facing - https://wiki.python.org/moin/WebFrameworks
 
+21-240
+
+https://pypi.org/project/Werkzeug/ - 
+
+        file.save('uploaded_' + werkzeug.secure_filename(file.filename))        # strip slashes/unsafe characters from name
+        with open('uploaded_' + werkzeug.secure_filename(file.filename), 'a') as write_file:
+            write_file.write('\n- this being added later!')
+
+
+            {% include btn ignore missing %}  <!-- jinja placeholder referring to variable maybe passed from success route function, ignore if absent on initial visit to page -->
+
+
+in download.html,
+<!DOCTYPE html>
+<html>
+    <div class="download">
+        <a href="{{url_for('download')}}" target="blank"><button class="btn"> Download </button> </a>
+    </div>
+</html>
+will require a dummy route function for 'download' to avoid missing endpoint Flask error
+
+@app.route('download')
+def download():
+    """ function to avoid 'missing endpoint' error """
+    pass
 
 
 -----------------------------------------------
@@ -1139,3 +1164,5 @@ csv (seesvee)
 web scraping (web scrapping)
 
 you know (at start, rather than at end like USA usage - interesting)
+
+harder work interpreting the accent
