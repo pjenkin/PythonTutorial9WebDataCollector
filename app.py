@@ -1,8 +1,11 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 # from flask.ext.sqlalchemy import SQLAlchemy   # NB was this
 from flask_sqlalchemy import SQLAlchemy             # now this (as of 25/3/19)
 from send_email import send_email
 from sqlalchemy.sql import func
+#from werkzeug import secure_filename
+import werkzeug
+
 
 app = Flask(__name__)           # use whatever is the name of this script cf 10-143
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/height_collector'
@@ -32,10 +35,12 @@ class Data(db.Model):
 def index():
     return render_template("index.html")
 
+# working ok - commented-out only to facilitate 21-240 file upload/download
 # NB have to add form POST processing route to mappings - also action="{{url_for('success')}}" in markup
 # must explicitly declare POST not GET
 @app.route("/success", methods=['POST'])
 def success():
+    global file         # make global to be accessible in download function
     if request.method == 'POST':
         email = request.form['email_name']
         height = request.form['height_name']
