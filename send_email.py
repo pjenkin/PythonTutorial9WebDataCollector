@@ -1,7 +1,7 @@
 from email.mime.text import MIMEText       # standard package - enabling HTML content
 import smtplib
 
-def send_email(email, height):
+def send_email(email, height, average_height, count):
     """Send email back from form """
     from_email = 'peterjenkin2019@gmail.com'
     # from_password = 'P0s1t!ve'
@@ -10,7 +10,8 @@ def send_email(email, height):
     to_email = email
 
     subject = 'Height data'
-    message = f'Hello, your height was recorded as <strong><em>{height}</em></strong>'
+    message = f'Hello, your height was recorded as <strong><em>{height}</em></strong>, average height of {count} people is {average_height}.'
+    print(message)
 
     message = MIMEText(message, 'html')     # MIME type of html in message header
     message['Subject'] = subject
@@ -22,7 +23,7 @@ def send_email(email, height):
         gmail.ehlo          # https://docs.python.org/2/library/smtplib.html
         gmail.starttls      # NB Transport Layer Security - gmail on port 587
         gmail.ehlo          # https://docs.python.org/2/library/smtplib.html
-        gmail.login(from_email, from_password)
+        gmail.login(from_email, from_password)      # error here
         gmail.send_message(message)
         # NB Allow less secure apps - Sign-in & security in gmail - as of 25/3/19 requiring G-Suite, for which there is a charge
         # REMmed out calling line in app.py

@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 # from flask.ext.sqlalchemy import SQLAlchemy   # NB was this
 from flask_sqlalchemy import SQLAlchemy             # now this (as of 25/3/19)
 from send_email import send_email
+from sqlalchemy.sql import func
 
 app = Flask(__name__)           # use whatever is the name of this script cf 10-143
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/height_collector'
